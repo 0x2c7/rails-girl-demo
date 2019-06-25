@@ -22,4 +22,4 @@ COPY . ./
 EXPOSE 80
 
 # Start puma
-CMD ["start_server.sh"]
+CMD ["/app/start_server.sh"]
