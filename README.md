@@ -6,6 +6,8 @@ To start the project, please run the following command, assuming that Docker is 
 docker-compose up --build
 ```
 
+To open the web server, please access [http://localhost:4000](http://localhost:4000)
+
 To deploy to the world, please follow the following step:
 
 - Register an account in Heroku

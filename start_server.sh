@@ -1,2 +1,3 @@
 #!/bin/bash
-bundle exec rake db:migrate && bundle exec puma -p 4000 -C ./config/puma.rb
+SERVER_PORT=${PORT:-80}
+bundle exec rake db:migrate && bundle exec puma -p $SERVER_PORT -C ./config/puma.rb

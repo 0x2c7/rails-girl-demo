@@ -22,4 +22,4 @@ COPY . ./
 EXPOSE 80
 
 # Start puma
-CMD ["bundle", "exec", "puma", "-p", "$PORT", "-C", "./config/puma.rb"]
+CMD ["start_server.sh"]
