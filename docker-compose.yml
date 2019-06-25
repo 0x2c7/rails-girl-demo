@@ -1,0 +1,35 @@
+version: '2'
+services:
+  api:
+    tty: true
+    stdin_open: true
+    build: .
+    command: ./wait-for-it.sh postgres:5432 -- bash -c "/app/start_server.sh"
+    environment:
+      - BUNDLE_JOBS=5
+      - SECRET_KEY_BASE=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - RAILS_ENV=development
+      - DATABASE_HOST=postgres
+      - DATABASE_NAME=railsgirl_db
+      - DATABASE_USR=root
+      - DATABASE_PWD=password
+      - AWS_REGION=ap-southeast-2
+    volumes:
+      - ./:/app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+  postgres:
+    image: postgres:9.4
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=railsgirl_db
+    volumes:
+      - /var/lib/postgresql/data
+    ports:
+      - "5432"

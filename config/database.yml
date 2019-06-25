@@ -1,0 +1,24 @@
+development:
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV["DATABASE_HOST"] || 'localhost' %>
+  database: <%= ENV["DATABASE_NAME"] || "railsgirl_db" %>
+  pool: 5
+  username: <%= ENV["DATABASE_USR"] %>
+  password: <%= ENV["DATABASE_PWD"] %>
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: announcement_service_test<%= ENV['TEST_ENV_NUMBER'] %>
+  pool: 5
+  host: <%= ENV["DATABASE_HOST"] || 'localhost' %>
+  username: <%= ENV["DATABASE_USR"] %>
+  password: <%= ENV["DATABASE_PWD"] %>
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  prepared_statements: false
+  url: <%= ENV["DATABASE_URL"] %>
+  pool: <%= ENV["DATABASE_POOL"] || 15 %>
