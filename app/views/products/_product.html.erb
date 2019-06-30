@@ -1,0 +1,14 @@
+<div class="product col-md-4 mb-3">
+  <a href="<%= product_path(product) %>">
+    <p>
+    <img class="img-fluid img-thumbnail" src="<%= product.image %>"/>
+    </p>
+  </a>
+  <div class="d-flex justify-content-between">
+    <div class="product-brand mb-1"><%= product.brand %></div>
+    <div class="product-id mb-1">#<%= product.id %></div>
+  </div>
+
+  <h5 class="product-name"><a href="<%= product_path(product) %>"><%= product.name %></a></h5>
+  <h5 class="product-price"><%= number_to_currency(product.price, unit: 'đ', seperator: ',', format: "%n %u") %></h5>
+</div>

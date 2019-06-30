@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
-  root to: 'cart#index'
-  resources :cart, only: [:index]
+  get 'products/show'
+  root 'products#index'
+  resources :products, only: [:index, :show]
 end
