@@ -1,6 +1,6 @@
 # Rails Girl 2019
 
-<details><summary>0. Prepare your development environbment</summary>
+<details><summary><h3>0. Prepare your development environbment</h3></summary>
 
 Before you get start, please make sure your laptop is ready for the workshop. Typically, you'll need those applications:
 
