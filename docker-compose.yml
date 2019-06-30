@@ -1,6 +1,6 @@
 version: '2'
 services:
-  api:
+  web:
     tty: true
     stdin_open: true
     build: .
