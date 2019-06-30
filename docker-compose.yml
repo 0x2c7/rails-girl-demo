@@ -4,7 +4,7 @@ services:
     tty: true
     stdin_open: true
     build: .
-    command: ./wait-for-it.sh postgres:5432 -- bash -c "/app/start_server.sh"
+    command: ./wait-for-it.sh postgres:5432 -- bash -c "/app/bin/start.sh"
     environment:
       - BUNDLE_JOBS=5
       - SECRET_KEY_BASE=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
