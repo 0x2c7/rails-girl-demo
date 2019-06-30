@@ -79,7 +79,7 @@ Let's create the first page to show the above product.
 - Run this command:
 
 ```bash
-rails generate controller Products index
+rails generate controller Products index show
 ```
 
 You are using the scaffolding feature of Rails. If everything is correct, you'll see something like this:
@@ -193,7 +193,7 @@ end
     <img class="img-fluid img-thumbnail" src="<%= product[:image] %>"/>
   </p>
   <div class="product-brand mb-1"><%= product[:brand] %></div>
-  <h5><%= product[:name] %></h5>
+  <h5 class="product-name"><%= product[:name] %></h5>
   <h5 class="product-price"><%= number_to_currency(product[:price], unit: 'đ', seperator: ',', format: "%n %u") %></h5>
 </div>
 ```
@@ -201,6 +201,14 @@ end
 - Update the file `app/assets/stylesheets/products.scss` with:
 
 ```css
+.product-name {
+  color: #222;
+}
+
+.product-name a {
+  color: #222;
+}
+
 .product-brand {
   color: #777;
 }
@@ -306,7 +314,7 @@ end
     <div class="product-brand mb-1"><%= product.brand %></div>
     <div class="product-id mb-1">#<%= product.id %></div>
   </div>
-  <h5><%= product.name %></h5>
+  <h5 class="product-name"><%= product.name %></h5>
   <h5 class="product-price"><%= number_to_currency(product.price, unit: 'đ', seperator: ',', format: "%n %u") %></h5>
 </div>
 ```
@@ -351,7 +359,154 @@ product.destroy!
 ```
 </details>
 
-<details><summary><h2>Deploy your application</h2></summary>
+
+<details><summary><h2>4. Build the product detail page</h2></summary>
+
+- Add the routing information of the products to `config/routes.rb`:
+
+```ruby
+resources :products, only: [:index, :show]
+```
+
+- Create a top navigation bar. Update the file `app/views/layouts/application.html.erb` with:
+
+```erb
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Rails Girl Shop</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= javascript_include_tag 'application' %>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-light bg-light">
+      <a class="navbar-brand" href="<%= root_path %>">
+        Rails Girl Shop
+      </a>
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="<%= root_path %>">Products</a>
+        </li>
+      </ul>
+    </nav>
+    <main class="pt-3">
+      <%= yield %>
+    </main>
+  </body>
+</html>
+```
+
+- To view the list of available routes, use
+
+```bash
+rake routes
+```
+
+- Add the product link, edit the file `app/views/products/_product.html.erb`:
+
+
+```erb
+<div class="product col-md-4 mb-3">
+  <a href="<%= product_path(product) %>">
+    <p>
+    <img class="img-fluid img-thumbnail" src="<%= product.image %>"/>
+    </p>
+  </a>
+  <div class="d-flex justify-content-between">
+    <div class="product-brand mb-1"><%= product.brand %></div>
+    <div class="product-id mb-1">#<%= product.id %></div>
+  </div>
+
+  <h5 class="product-name"><a href="<%= product_path(product) %>"><%= product.name %></a></h5>
+  <h5 class="product-price"><%= number_to_currency(product.price, unit: 'đ', seperator: ',', format: "%n %u") %></h5>
+</div>
+```
+
+- Add the `show` method into `ProductsController` at `app/controllers/products_controller.rb`
+
+```ruby
+  def show
+    @product = Product.find(params[:id])
+  end
+```
+
+- Create the product detail page, edit `app/views/products/show.html.erb`
+
+```ruby
+<div class="product-detail container d-flex justify-content-around">
+  <img class="flex-grow-1 img-fluid img-thumbnail" src="<%= @product.image %>"/>
+  <div class="product-detail-info ml-3">
+    <div class="d-flex justify-content-between">
+      <div class="product-brand mb-1"><%= @product.brand %></div>
+      <div class="product-id mb-1">#<%= @product.id %></div>
+    </div>
+
+    <h4 class="product-name"><a href="<%= product_path(@product) %>"><%= @product.name %></a></h5>
+    <h5 class="product-price"><%= number_to_currency(@product.price, unit: 'đ', seperator: ',', format: "%n %u") %></h5>
+  </div>
+</div>
+```
+
+- Add some styles into `app/assets/stylesheets/products.scss`:
+
+```css
+.product-detail .product-detail-info {
+  flex: 0 0 300px;
+}
+```
+
+- The product detail page needs some more information. Let's add one more field into product, called description.
+
+```bash
+rails generate migration add_description_to_products description:text
+```
+
+- Run command to make database migration effective:
+
+```bash
+rake db:migrate
+```
+
+- Add product description for a product (for example, ID 3) with Rails console. Or you can update the seed file and re-seed again.
+
+```ruby
+product = Product.find(3)
+product.update!(description: "- An immersive Cinematic Infinity Display, Pro-grade Camera and Wireless PowerShare The next generation is here
+
+- Ultrasonic in-display fingerprint ID protects and unlocks with the first touch
+
+- Pro-grade Camera effortlessly captures epic, pro-quality images of the world as you see it
+
+- Intelligently accesses power by learning how and when you use your phone
+")
+```
+
+- Add product description section to the file `app/views/products/show.html.erb`
+
+```erb
+<p class="product-description"><%= simple_format(@product.description) %></p>
+```
+
+- Add some more styling to the CSS file:
+
+```css
+.product-detail .product-description {
+  padding-top: 15px;
+  margin-top: 15px;
+  border-top: 1px #ddd solid;
+}
+```
+
+![Product detail page](./guides/4-final-result.png)
+</details>
+
+<details><summary><h2>[Advanced] 5. Deploy your application</h2></summary>
 To deploy to the world, please follow the following step:
 
 - Register an account in Heroku
@@ -382,4 +537,16 @@ Click on "Open app", and enjoy
 To re-deploy, please follow the following step:
 - Run `heroku container:push web --app <<APP NAME>>`
 - Run `heroku container:release web --app <<APP NAME>>`
+</details>
+
+<details><summary><h2>[Advanced] 6. Add to cart feature</h2></summary>
+</details>
+
+<details><summary><h2>[Advanced] 7. Add authentication feature</h2></summary>
+</details>
+
+<details><summary><h2>[Advanced] 8. Build admin product management page</h2></summary>
+</details>
+
+<details><summary><h2>[Advanced] 9. Add checkout flow</h2></summary>
 </details>
