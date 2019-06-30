@@ -200,7 +200,7 @@ end
 
 - Update the file `app/assets/stylesheets/products.scss` with:
 
-```erb
+```css
 .product-brand {
   color: #777;
 }
@@ -214,6 +214,141 @@ end
 
 ![Product list new look](./guides/2-new-look.png)
 
+</details>
+
+<details><summary><h2>3. Use database to manage your products</h2></summary>
+
+When the number of products grows, it's terrible to keep adding the products to the `ProductsController`. Let's use the database to store and manage your products.
+
+- Generate models and schema migration with this command:
+
+```bash
+rails generate model Product name:text brand:text price:integer image:text
+```
+
+- Make the database schema change take effective with this command:
+
+```bash
+rake db:migrate
+```
+
+- We'll need some validations for the Product model to ensure the validity of data. Edit the file `app/models/product.rb`
+
+```ruby
+class Product < ApplicationRecord
+  validates :name, presence: true, length: {in: 5..255}
+  validates :brand, presence: true, length: {in: 5..100}
+  validates :price, inclusion: 1..1000000000
+  validates  :image, presence: true
+end
+```
+
+- You'll need a list of seed products for your website. Copy the product list in `ProductsController`, and convert into following in the file `db/seeds.rb`
+
+```ruby
+Product.destroy_all
+Product.create(
+  name: 'Điện thoại iPhone XS Max 512GB',
+  brand: 'Apple',
+  price: 29000000,
+  image: 'https://cdn.fptshop.com.vn/Uploads/Originals/2018/10/11/636748771945393060_iPhone-Xs-Max-gold.png'
+)
+Product.create!(
+  name: 'Tai nghe Bluetooth Airpod 2',
+  brand: 'Apple',
+  price: 4500000,
+  image: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/image/AppleInc/aos/published/images/M/RX/MRXJ2/MRXJ2?wid=1144&hei=1144&fmt=jpeg&qlt=95&op_usm=0.5,0.5&.v=1551489675083'
+)
+Product.create!(
+  name: 'Điện Thoại Samsung Galaxy S10',
+  brand: 'Samsung',
+  price: 16000000,
+  image: 'https://cdn.fptshop.com.vn/Uploads/Originals/2019/2/21/636863643187455627_ss-galaxy-s10-trang-1.png'
+)
+Product.create!(
+  name: 'Tai nghe Beat Studio M8',
+  brand: 'Apple',
+  price: 7000000,
+  image: 'https://ngheloa.com/wp-content/uploads/2017/12/headphone-beat-studio-ms-81118-chinh-hang-ngheloa.com-1.jpg'
+)
+Product.create!(
+  name: 'Máy tính bảng iPad Pro 11 inch Wifi 64GB',
+  brand: 'Apple',
+  price: 20000000,
+  image: 'https://cdn.tgdd.vn/Products/Images/522/195067/ipad-pro-11-inch-2018-64gb-wifi-33397-thumb-600x600.jpg'
+)
+```
+
+- Run this script to seed the product list into database:
+
+```ruby
+rake db:seed
+```
+
+- Update the file `app/controllers/products_controller.rb`, with:
+
+```ruby
+class ProductsController < ApplicationController
+  def index
+    @products = Product.all
+  end
+end
+```
+
+- Replace the hash access syntax to method calls in `app/views/products/_product.html.erb` with:
+
+```ruby
+<div class="product col-md-4 mb-3">
+  <p>
+    <img class="img-fluid img-thumbnail" src="<%= product.image %>"/>
+  </p>
+  <div class="d-flex justify-content-between">
+    <div class="product-brand mb-1"><%= product.brand %></div>
+    <div class="product-id mb-1">#<%= product.id %></div>
+  </div>
+  <h5><%= product.name %></h5>
+  <h5 class="product-price"><%= number_to_currency(product.price, unit: 'đ', seperator: ',', format: "%n %u") %></h5>
+</div>
+```
+
+- The number next to the brand is the product ID. Add some CSS styles to de-emphasize the product ID. Add to the file `app/assets/stylesheets/products.scss`:
+
+```css
+.product-id {
+  color: #777;
+}
+```
+
+- Now, open Rails console with the command:
+
+```bash
+rails c
+```
+
+- You can freely create a new product by copy & paste the commands into Rails console:
+
+```ruby
+Product.create!(
+  name: 'name',
+  brand: 'brand',
+  price: 1000,
+  image: 'image_url'
+)
+```
+
+- You can also update a particular product information (for example ID 4), with the following commands in Rails console:
+
+```ruby
+product = Product.find(4)
+product.update!(price: 8000000)
+```
+
+- And finally, you can delete a particular product (for example ID 3), with the following commands in Rials console:
+
+```ruby
+product = Product.find(3)
+product.destroy!
+```
 </details>
 
 <details><summary><h2>Deploy your application</h2></summary>
