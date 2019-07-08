@@ -503,7 +503,7 @@ product.update!(description: "- An immersive Cinematic Infinity Display, Pro-gra
 ![Product detail page](./guides/4-final-result.png)
 
 
-# [Advanced] 5. Deploy your application
+# 5. Deploy your application
 To deploy to the world, please follow the following step:
 
 - Register an account in Heroku
@@ -536,14 +536,14 @@ To re-deploy, please follow the following step:
 - Run `heroku container:release web --app <<APP NAME>>`
 
 
-# [Advanced] 6. Add to cart feature
+# 6. Add to cart feature
 
 
-# [Advanced] 7. Add authentication feature
+# 7. Add authentication feature
 
 
-# [Advanced] 8. Build admin product management page
+# 8. Build admin product management page
 
 
-# [Advanced] 9. Add checkout flow
+# 9. Add checkout flow
 
