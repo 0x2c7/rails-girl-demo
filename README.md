@@ -1,7 +1,5 @@
 # Rails Girl 2019
-
-<h2>0. Prepare your development environbment</h2>
-
+# 0. Prepare your development environbment
 Before you get start, please make sure your laptop is ready for the workshop. Typically, you'll need those applications:
 
 - Text editor (heavily personal preference, for example VSCode, Atom, etc.)
@@ -12,7 +10,7 @@ Before you get start, please make sure your laptop is ready for the workshop. Ty
 
 
 
-<h2>1. Getting Started</h2>
+# 1. Getting Started
 
 To make things easier for you to setup the development environment, we already prepare a developmet kit, and all the following commands are based on this template. If you want to setup the development environment by yourself from scratch, read the Go Extra Miles sections. You'll need to make a copy of this kit in your computer,
 
@@ -50,7 +48,7 @@ cd rails-girl-demo
 - To stop the web server, in your recent terminal window, press `Ctrl` and `C`.
 
 
-<h2>2. Create a static product listing page</h2>
+# 2. Create a static product listing page
 
 In this section, you'll be able to create a page to show a list of products. A typical product shown on the home page needs some information:
 
@@ -224,7 +222,7 @@ end
 
 
 
-<h2>3. Use database to manage your products</h2>
+# 3. Use database to manage your products
 
 When the number of products grows, it's terrible to keep adding the products to the `ProductsController`. Let's use the database to store and manage your products.
 
@@ -360,7 +358,7 @@ product.destroy!
 
 
 
-<h2>4. Build the product detail page</h2>
+# 4. Build the product detail page
 
 - Add the routing information of the products to `config/routes.rb`:
 
@@ -506,7 +504,7 @@ product.update!(description: "- An immersive Cinematic Infinity Display, Pro-gra
 ![Product detail page](./guides/4-final-result.png)
 
 
-<h2>[Advanced] 5. Deploy your application</h2>
+# [Advanced] 5. Deploy your application
 To deploy to the world, please follow the following step:
 
 - Register an account in Heroku
@@ -539,14 +537,14 @@ To re-deploy, please follow the following step:
 - Run `heroku container:release web --app <<APP NAME>>`
 
 
-<h2>[Advanced] 6. Add to cart feature</h2>
+# [Advanced] 6. Add to cart feature
 
 
-<h2>[Advanced] 7. Add authentication feature</h2>
+# [Advanced] 7. Add authentication feature
 
 
-<h2>[Advanced] 8. Build admin product management page</h2>
+# [Advanced] 8. Build admin product management page
 
 
-<h2>[Advanced] 9. Add checkout flow</h2>
+# [Advanced] 9. Add checkout flow
 
