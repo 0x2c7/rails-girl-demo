@@ -1,6 +1,6 @@
 # Rails Girl 2019
 
-<details><summary><h2>0. Prepare your development environbment</h2></summary>
+<h2>0. Prepare your development environbment</h2>
 
 Before you get start, please make sure your laptop is ready for the workshop. Typically, you'll need those applications:
 
@@ -10,9 +10,9 @@ Before you get start, please make sure your laptop is ready for the workshop. Ty
 - Docker
 - Git
 
-</details>
 
-<details><summary><h2>1. Getting Started</h2></summary>
+
+<h2>1. Getting Started</h2>
 
 To make things easier for you to setup the development environment, we already prepare a developmet kit, and all the following commands are based on this template. If you want to setup the development environment by yourself from scratch, read the Go Extra Miles sections. You'll need to make a copy of this kit in your computer,
 
@@ -48,9 +48,9 @@ cd rails-girl-demo
 ![Getting started server](guides/1-server-start.png)
 
 - To stop the web server, in your recent terminal window, press `Ctrl` and `C`.
-</details>
 
-<details><summary><h2>2. Create a static product listing page</h2></summary>
+
+<h2>2. Create a static product listing page</h2>
 
 In this section, you'll be able to create a page to show a list of products. A typical product shown on the home page needs some information:
 
@@ -222,9 +222,9 @@ end
 
 ![Product list new look](./guides/2-new-look.png)
 
-</details>
 
-<details><summary><h2>3. Use database to manage your products</h2></summary>
+
+<h2>3. Use database to manage your products</h2>
 
 When the number of products grows, it's terrible to keep adding the products to the `ProductsController`. Let's use the database to store and manage your products.
 
@@ -357,10 +357,10 @@ product.update!(price: 8000000)
 product = Product.find(3)
 product.destroy!
 ```
-</details>
 
 
-<details><summary><h2>4. Build the product detail page</h2></summary>
+
+<h2>4. Build the product detail page</h2>
 
 - Add the routing information of the products to `config/routes.rb`:
 
@@ -504,9 +504,9 @@ product.update!(description: "- An immersive Cinematic Infinity Display, Pro-gra
 ```
 
 ![Product detail page](./guides/4-final-result.png)
-</details>
 
-<details><summary><h2>[Advanced] 5. Deploy your application</h2></summary>
+
+<h2>[Advanced] 5. Deploy your application</h2>
 To deploy to the world, please follow the following step:
 
 - Register an account in Heroku
@@ -537,16 +537,16 @@ Click on "Open app", and enjoy
 To re-deploy, please follow the following step:
 - Run `heroku container:push web --app <<APP NAME>>`
 - Run `heroku container:release web --app <<APP NAME>>`
-</details>
 
-<details><summary><h2>[Advanced] 6. Add to cart feature</h2></summary>
-</details>
 
-<details><summary><h2>[Advanced] 7. Add authentication feature</h2></summary>
-</details>
+<h2>[Advanced] 6. Add to cart feature</h2>
 
-<details><summary><h2>[Advanced] 8. Build admin product management page</h2></summary>
-</details>
 
-<details><summary><h2>[Advanced] 9. Add checkout flow</h2></summary>
-</details>
+<h2>[Advanced] 7. Add authentication feature</h2>
+
+
+<h2>[Advanced] 8. Build admin product management page</h2>
+
+
+<h2>[Advanced] 9. Add checkout flow</h2>
+
