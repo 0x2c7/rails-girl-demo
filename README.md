@@ -1,5 +1,4 @@
-# Rails Girl 2019
-# 0. Prepare your development environbment
+# Prepare your development environment
 Before you get start, please make sure your laptop is ready for the workshop. Typically, you'll need those applications:
 
 - Text editor (heavily personal preference, for example VSCode, Atom, etc.)
