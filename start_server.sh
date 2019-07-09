@@ -1,2 +1,2 @@
 #!/bin/bash
-docker-compose up web
+docker-compose down && docker-compose up

@@ -382,15 +382,19 @@ resources :products, only: [:index, :show]
   </head>
 
   <body>
-    <nav class="navbar navbar-light bg-light">
-      <a class="navbar-brand" href="<%= root_path %>">
-        Rails Girl Shop
-      </a>
-      <ul class="navbar-nav">
-        <li class="nav-item active">
-          <a class="nav-link" href="<%= root_path %>">Products</a>
-        </li>
-      </ul>
+    <nav class="navbar navbar-light bg-light navbar-expand-md">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="<%= root_path %>">
+          Rails Girl Shop
+        </a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="<%= root_path %>">Products</a>
+          </li>
+        </ul>
+      </div>
     </nav>
     <main class="pt-3">
       <%= yield %>
@@ -503,7 +507,7 @@ product.update!(description: "- An immersive Cinematic Infinity Display, Pro-gra
 ![Product detail page](./guides/4-final-result.png)
 
 
-# 5. Deploy your application
+# 5. Deploy your application (Advanced)
 To deploy to the world, please follow the following step:
 
 - Register an account in Heroku
@@ -536,14 +540,181 @@ To re-deploy, please follow the following step:
 - Run `heroku container:release web --app <<APP NAME>>`
 
 
-# 6. Add to cart feature
+# 6. Build admin product management page (Advanced)
 
+In this section, you'll implement an admin page
+
+```ruby
+rails generate scaffold_controller admin/products --model-name Product
+```
+
+`config/routes.rb`
+```ruby
+namespace :admin do
+  root 'products#index'
+  resources :products, only: [:new, :create, :index, :edit, :update, :destroy]
+end
+```
+
+`app/views/layouts/application.html.erb`
+```erb
+<li class="nav-item">
+  <a class="nav-link" href="<%= root_path %>">Products</a>
+</li>
+```
+
+`app/views/admin/products/index.html.erb`
+```erb
+<div class="container">
+  <%= link_to 'New product', new_admin_product_path, class: 'btn btn-success mb-3'%>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Image</th>
+        <th scope="col">Brand</th>
+        <th scope="col">Product name</th>
+        <th scope="col">Produce description</th>
+        <th scope="col">Price</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @products.each do |product| %>
+        <%= render 'product', product: product %>
+      <% end %>
+    </tbody>
+  </table>
+  <%= link_to 'New product', new_admin_product_path, class: 'btn btn-success mt-3'%>
+</div>
+```
+
+`app/views/admin/products/_product_row.html.erb`
+```erb
+<tr>
+  <td class="align-middle"><%= product.id %></td>
+  <td class="align-middle"><img class="img-thumbnail admin-product-image" src="<%= product.image %>"/></td>
+  <td class="align-middle"><%= product.brand %></td>
+  <td class="align-middle"><%= product.name %></td>
+  <td class="align-middle"><%= number_to_currency(product.price, unit: 'đ', seperator: ',', format: "%n %u") %></td>
+  <td class="align-middle">
+    <%= link_to 'Edit', edit_admin_product_path(product), class: "btn btn-primary" %>
+    <%= link_to 'Show', product_path(product), class: "btn btn-secondary", target: '_blank' %>
+    <%= link_to 'Delete', admin_product_path(product), method: :delete, data: {confirm: "Are you sure?"}, class: 'btn btn-danger' %>
+  </td>
+</tr>
+```
+
+`app/assets/stylesheets/admin/products.scss`
+
+```css
+.admin-product-image {
+  max-width: 128px;
+}
+```
+
+`app/views/admin/products/edit.html.erb`
+
+```
+<div class="container">
+  <%= link_to '<< Back', admin_products_path %>
+  <%= render 'form', product: @product %>
+</div>
+```
+
+`app/views/admin/products/new.html.erb`
+
+```erb
+<div class="container">
+  <%= link_to '<< Back', admin_products_path %>
+  <%= render 'form', product: @product %>
+</div>
+```
+
+`app/views/admin/products/_form.html.erb`
+
+```erb
+<%= form_with(model: [:admin, product], local: true) do |form| %>
+  <div class="mt-3 mb-3">
+    <div class="form-group">
+      <label for="product_brand">Brand</label>
+      <%= form.text_field(:brand, class: 'form-control') %>
+    </div>
+
+    <div class="form-group">
+      <label for="product_image">Product image</label>
+      <%= form.text_field(:image, class: 'form-control') %>
+    </div>
+
+    <div class="form-group">
+      <label for="product_name">Name</label>
+      <%= form.text_field(:name, class: 'form-control') %>
+    </div>
+
+    <div class="form-group">
+      <label for="product_description">Name</label>
+      <%= form.text_area(:description, class: 'form-control', rows: 7) %>
+    </div>
+
+    <div class="form-group">
+      <label for="product_price">Name</label>
+      <%= form.number_field(:price, class: 'form-control') %>
+    </div>
+  </div>
+
+  <% if product.errors.any? %>
+    <div class="card bg-warning">
+      <div class="card-body">
+        <ul>
+        <% product.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <% if notice %>
+    <div class="card bg-success">
+      <div class="card-body">
+        <%= notice %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="actions d-flex justify-content-center mt-3">
+    <%= form.submit(class: 'btn btn-primary') %>
+  </div>
+<% end %>
+```
+
+`app/controllers/admin/products_controller.rb`
+
+```ruby
+def product_params
+  params.fetch(:product).permit(:brand, :image, :name, :description, :price)
+end
+```
+
+```ruby
+redirect_to @product, notice: 'Product was successfully created.'
+```
+
+```ruby
+redirect_to edit_admin_product_path(@product), notice: 'Product was successfully created.'
+```
+
+```ruby
+redirect_to @product, notice: 'Product was successfully updated.'
+```
+
+```ruby
+redirect_to edit_admin_product_path(@product), notice: 'Product was successfully updated.'
+```
 
 # 7. Add authentication feature
 
-
-# 8. Build admin product management page
-
+# 8. Add to cart feature
 
 # 9. Add checkout flow
 

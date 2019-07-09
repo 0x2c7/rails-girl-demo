@@ -30,6 +30,6 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=railsgirl_db
     volumes:
-      - /var/lib/postgresql/data
+      - ./tmp/db/data:/var/lib/postgresql/data
     ports:
       - "5432"
