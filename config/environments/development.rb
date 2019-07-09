@@ -63,4 +63,6 @@ Rails.application.configure do
   logger.formatter = config.log_formatter
   config.logger = ActiveSupport::TaggedLogging.new(logger)
   config.log_level = :debug
+
+  config.action_mailer.default_url_options = { host: 'localhost', port: 4000 }
 end

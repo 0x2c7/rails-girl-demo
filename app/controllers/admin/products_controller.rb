@@ -1,4 +1,5 @@
 class Admin::ProductsController < ApplicationController
+  before_action :authenticate_admin!
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
   # GET /products
@@ -70,5 +71,12 @@ class Admin::ProductsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def product_params
       params.fetch(:product).permit(:brand, :image, :name, :description, :price)
+    end
+
+    def authenticate_admin!
+      authenticate_user!
+      unless current_user.is_admin?
+        redirect_to root_path, alert: 'You must be admin to access this page'
+      end
     end
 end
