@@ -542,13 +542,26 @@ To re-deploy, please follow the following step:
 
 # 6. Build admin product management page (Advanced)
 
-In this section, you'll implement an admin page
+In this section, you'll implement an admin page to manage the products displayed in the product page. The management page stays at a subpath of the website ([http://localhost:4000/admin](http://localhost:4000/admin)), and acts as a isolated module of the website. The functionalities include:
+
+- List of all products in the system
+- Create new product
+- Edit a product
+- Delete a product
+- Validate the product information and display errors if any.
+
+At the first look, it looks like there are a lot of things to do, at least tripple what we already did right? Not at all, Ruby on Rails is famous of the ability to generate everything you need with one command, called `scaffold`.
+
+- Run the following command:
 
 ```ruby
 rails generate scaffold_controller admin/products --model-name Product
 ```
 
-`config/routes.rb`
+- You'll all the things we need (controllers, views, etc.) are generated. You should discover the contents in those files by yourself to know what the scaffold provides you.
+
+- Add the routing configuration for admin page to `config/routes.rb`:
+
 ```ruby
 namespace :admin do
   root 'products#index'
@@ -556,14 +569,18 @@ namespace :admin do
 end
 ```
 
-`app/views/layouts/application.html.erb`
+- You can now access the admin page via [http://localhost:4000/admin](http://localhost:4000/admin). There isn't much content inside.
+
+- Let's the menu item in the navigation bar on the top to access the admin page quickly. Add the following content into `app/views/layouts/application.html.erb`:
+
 ```erb
 <li class="nav-item">
   <a class="nav-link" href="<%= root_path %>">Products</a>
 </li>
 ```
 
-`app/views/admin/products/index.html.erb`
+- Replace the content in `app/views/admin/products/index.html.erb` with:
+
 ```erb
 <div class="container">
   <%= link_to 'New product', new_admin_product_path, class: 'btn btn-success mb-3'%>
@@ -589,7 +606,8 @@ end
 </div>
 ```
 
-`app/views/admin/products/_product_row.html.erb`
+- Create a new file `app/views/admin/products/_product_row.html.erb` with the content:
+
 ```erb
 <tr>
   <td class="align-middle"><%= product.id %></td>
@@ -605,7 +623,11 @@ end
 </tr>
 ```
 
-`app/assets/stylesheets/admin/products.scss`
+- Now access the admin page again, you'll see the list of products there.
+
+![Admin product page](./guides/6-admin-products.png)
+
+- To make the product images smaller and fit into the table, add to `app/assets/stylesheets/admin/products.scss`:
 
 ```css
 .admin-product-image {
@@ -613,7 +635,9 @@ end
 }
 ```
 
-`app/views/admin/products/edit.html.erb`
+- Let's continue to implement the product edit and new page.
+
+- Replace the content in `app/views/admin/products/edit.html.erb` with:
 
 ```
 <div class="container">
@@ -622,7 +646,7 @@ end
 </div>
 ```
 
-`app/views/admin/products/new.html.erb`
+- Replace the content in `app/views/admin/products/new.html.erb` with:
 
 ```erb
 <div class="container">
@@ -631,7 +655,7 @@ end
 </div>
 ```
 
-`app/views/admin/products/_form.html.erb`
+- Create new file `app/views/admin/products/_form.html.erb` with following content:
 
 ```erb
 <%= form_with(model: [:admin, product], local: true) do |form| %>
@@ -688,7 +712,7 @@ end
 <% end %>
 ```
 
-`app/controllers/admin/products_controller.rb`
+- Edit the `product_params` method in `app/controllers/admin/products_controller.rb` with:
 
 ```ruby
 def product_params
@@ -696,25 +720,19 @@ def product_params
 end
 ```
 
-```ruby
-redirect_to @product, notice: 'Product was successfully created.'
-```
+- Find and replace the following content in `app/controllers/admin/products_controller.rb`:
 
-```ruby
-redirect_to edit_admin_product_path(@product), notice: 'Product was successfully created.'
-```
+  + From `redirect_to @product, notice: 'Product was successfully created.'` to `redirect_to edit_admin_product_path(@product), notice: 'Product was successfully created.'`
 
-```ruby
-redirect_to @product, notice: 'Product was successfully updated.'
-```
+  + From `redirect_to @product, notice: 'Product was successfully updated.'` to `redirect_to edit_admin_product_path(@product), notice: 'Product was successfully updated.'`
 
-```ruby
-redirect_to edit_admin_product_path(@product), notice: 'Product was successfully updated.'
-```
+- Refresh the admin management page, and tada, you a complete admin management page.
 
-# 7. Add authentication feature
+![Admin product page](./guides/6-admin-product-edit.png)
 
-# 8. Add to cart feature
+# 7. Add authentication feature (Advanced)
 
-# 9. Add checkout flow
+# 8. Add to cart feature (Advanced)
+
+# 9. Add checkout flow (Advanced)
 
