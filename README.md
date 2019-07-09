@@ -396,7 +396,7 @@ resources :products, only: [:index, :show]
         </ul>
       </div>
     </nav>
-    <main class="pt-3">
+    <main class="pt-3 container">
       <%= yield %>
     </main>
   </body>
@@ -552,9 +552,9 @@ In this section, you'll implement an admin page to manage the products displayed
 
 At the first look, it looks like there are a lot of things to do, at least tripple what we already did right? Not at all, Ruby on Rails is famous of the ability to generate everything you need with one command, called `scaffold`.
 
-- Run the following command:
+- Run the following command in the console:
 
-```ruby
+```bash
 rails generate scaffold_controller admin/products --model-name Product
 ```
 
@@ -698,14 +698,6 @@ end
     </div>
   <% end %>
 
-  <% if notice %>
-    <div class="card bg-success">
-      <div class="card-body">
-        <%= notice %>
-      </div>
-    </div>
-  <% end %>
-
   <div class="actions d-flex justify-content-center mt-3">
     <%= form.submit(class: 'btn btn-primary') %>
   </div>
@@ -726,11 +718,184 @@ end
 
   + From `redirect_to @product, notice: 'Product was successfully updated.'` to `redirect_to edit_admin_product_path(@product), notice: 'Product was successfully updated.'`
 
+- Add those lines into `app/views/layouts/application.html.erb`, before the body closing tag
+
+```erb
+<% if notice || alert %>
+  <div class="fixed-bottom container mb-3">
+    <% if notice %>
+      <div class="card bg-success">
+        <div class="card-body">
+          <%= notice %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if alert %>
+      <div class="card bg-danger">
+        <div class="card-body">
+          <%= alert %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+```
+
 - Refresh the admin management page, and tada, you a complete admin management page.
 
 ![Admin product page](./guides/6-admin-product-edit.png)
 
 # 7. Add authentication feature (Advanced)
+
+After you finish all the above sections, you may ask yourself a question "Wait, so everyone accessing my website can edit the product?". That would be a huge risk of security. Next, what would happen when a user want to buy a product? How can we differentiate the users in the website? To support all of those, we need to add a user system and corresponding authentication system. Don't be worried, Ruby on Rails ecosystem supports those fancy things out of the box. We'll use [Devise](https://github.com/plataformatec/devise), which is the most popular authentication solution for Ruby on Rails.
+
+- Add this line to `Gemfile`:
+
+```ruby
+gem 'devise'
+```
+
+- Run the following command in the console. The command will install the dependencies automatically from the cloud.
+
+```bash
+bundle install
+```
+
+- Run the following command inthe console
+
+```bash
+rails generate devise:install
+```
+
+- Add this line to block in `config/environments/development.rb`:
+
+```ruby
+config.action_mailer.default_url_options = { host: 'localhost', port: 4000 }
+```
+
+- Restart web server
+
+- Run the following command to create user system
+
+```bash
+rails generate devise User
+```
+
+- Run the following command to make the database schema change affective:
+
+```bash
+rake db:migrate
+```
+
+- Now add the following line to the top of `ProductsController` class in `app/controllers/admin/products_controller.rb`:
+
+```ruby
+before_action :authenticate_user!
+```
+
+- You can now access the admin page [http://localhost:4000/admin](http://localhost:4000/admin). You will be kicked out of the system.
+
+- Run the following command to generate sign in, sign up page:
+
+```bash
+rails generate devise:views
+```
+
+- Replace the navigation bar section in `app/views/layouts/application.html.erb` with:
+
+```erb
+<% if user_signed_in? %>
+    <li class="nav-item">
+      <div class="nav-link">
+        Hello <b><%= current_user.email %></b>
+      </div>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Sign out', destroy_user_session_path, class: 'nav-link', method: :delete %>
+    </li>
+<% else %>
+    <li class="nav-item">
+      <%= link_to 'Sign in', new_user_session_path, class: 'nav-link' %>
+    </li>
+    <li class="nav-item">
+      <%= link_to 'Register', new_user_registration_path, class: 'nav-link' %>
+    </li>
+  <% end %>
+</li>
+<% if user_signed_in? %>
+  <li class="nav-item">
+    <a class="nav-link" href="<%= admin_root_path %>">Admin</a>
+  </li>
+<% end %>
+```
+
+- Refresh the page, and tada. You can sign in / sign up new user. Let's register an account `test@test.com` and go around the website. Let's ignore the ugly styles for now.
+
+![Sign in page](./guides/7-sign-in-page.png)
+
+- You may raise another question. "Wait, so any signed in user can access the admin page?". Good question. We must differentiate a "normal user" and "admin user", who has power to edit the product.
+
+- Run the following command to add a field `is_admin` to the User model
+
+```bash
+rails generate migration add_is_admin_to_users is_admin:boolean
+```
+
+- Run the following command to make the database schema change affective:
+
+```bash
+rake db:migrate
+```
+
+- Now register a new user with the email `admin@test.com`, and update the `is_admin` flag of that user in the Rails console:
+
+```ruby
+user = User.find_by(email: 'admin@test.com')
+user.update(is_admin: true)
+```
+
+- Replace the admin link in `app/views/layouts/application.html.erb`:
+
+```erb
+<% if user_signed_in? %>
+  <li class="nav-item">
+    <a class="nav-link" href="<%= admin_root_path %>">Admin</a>
+  </li>
+<% end %>
+```
+
+With
+
+```erb
+<% if user_signed_in? && current_user.is_admin? %>
+  <li class="nav-item">
+    <a class="nav-link" href="<%= admin_root_path %>">Admin</a>
+  </li>
+<% end %>
+```
+
+- Update some contents in file `app/controllers/admin/products_controller.rb`:
+
++ Replace `before_action :authenticate_user!` by `before_action :authenticate_admin!`
++ Add those lines into the end of `ProductsController` class:
+
+```ruby
+def authenticate_admin!
+  authenticate_user!
+  unless current_user.is_admin?
+    redirect_to root_path, alert: 'You must be admin to access this page'
+  end
+end
+```
+
+- That's it. Now you should test those scenarios to see how the authentication works
+
++ Access the page with `test@test.com`, you can view all the products page, but won't see the admin page on the top navigation bar.
++ Access the admin page directly [http://localhost:4000/admin](http://localhost:4000/admin) with `test@test.com`, you'll be redirected to the home page.
++ Access the page with `admin@test.com`, you can view all the products page and can use the admin page. The link to admin page is available on the top navigation bar.
+
+- You can go extra miles by customize the styles of all the authentication pages in `app/views/devise`.
 
 # 8. Add to cart feature (Advanced)
 
