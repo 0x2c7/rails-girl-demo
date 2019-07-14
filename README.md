@@ -767,13 +767,6 @@ bundle install
 ```bash
 rails generate devise:install
 ```
-
-- Add this line to block in `config/environments/development.rb`:
-
-```ruby
-config.action_mailer.default_url_options = { host: 'localhost', port: 4000 }
-```
-
 - Restart web server
 
 - Run the following command to create user system
