@@ -897,7 +897,231 @@ end
 
 - You can go extra miles by customize the styles of all the authentication pages in `app/views/devise`.
 
-# 8. Add to cart feature (Advanced)
+# 8. Shoping cart feature (Advanced)
 
-# 9. Add checkout flow (Advanced)
+One of the core functionalities of a shopping website is to let people shop and order items on your website. To achieve that purpose, most of the big e-commerce websites apply the concept of Shopping Cart. When viewing a product, a user can pick a product, put it into a virtual cart, and checkout later.
 
+We'll use database to store the user's cart and items in the cart. The database schema looks like this:
+
+![Cart Badge](./guides/8-db-diagram.png)
+
+Each user has one unique cart at a time. Each cart includes a product reference (link to the Product tabel) and quantity of the product currently in cart.
+
+- Run this command in the console to create Cart model:
+
+```bash
+rails g model Cart user:references
+```
+
+- Run this command in the console to create CartItem model
+
+```bash
+rails g model CartItem cart:reference product:references quantity:integer
+```
+
+- Run this command in the console to make the database schema affective
+
+```bash
+rake db:migrate
+```
+
+- Add validations and relations into the `Cart` model (`app/models/cart.rb`)
+
+```ruby
+class Cart < ApplicationRecord
+  belongs_to :user
+  has_many :cart_items
+  validates :user_id, uniqueness: true
+
+  def total_quantity
+    cart_items.sum(:quantity)
+  end
+
+  def total_price
+    cart_items.sum(&:sub_total_price)
+  end
+end
+```
+
+- Do the same with `CartItem` model (`app/models/cart_item.rb`)
+
+```ruby
+class CartItem < ApplicationRecord
+  belongs_to :product
+  belongs_to :cart
+
+  validates :product_id, uniqueness: { scope: :cart_id }
+
+  def sub_total_price
+    product.price * quantity.to_i
+  end
+end
+```
+
+- Create `CartController` to handle the requests related to the cart
+
+```bash
+rails g controller Carts show --skip-routes
+```
+
+- Add the routing to the CartController in `config/routes.rb`:
+
+```ruby
+resource :carts, only: [:show] do
+  post ':product_id', to: 'carts#add_item', as: :add_item
+  delete ':product_id', to: 'carts#remove_item', as: :remove_item
+end
+```
+
+- Let's add the cart badge into the navigation bar.
+
+- Edit `app/controllers/application_controller.rb`
+
+```ruby
+class ApplicationController < ActionController::Base
+  def current_cart
+    if user_signed_in?
+      Cart.find_or_create_by(
+        user_id: current_user.id
+      )
+    end
+  end
+  helper_method :current_cart
+end
+```
+
+- Add the current cart path into the navigation bar in `app/views/layouts/application.html.erb`
+
+```erb
+<% if current_cart %>
+  <li class="nav-item">
+    <div class="nav-link">
+      <%= link_to carts_path do %>
+        Cart (<%= current_cart.total_quantity %>)
+      <% end %>
+    </div>
+  </li>
+<% end %>
+```
+
+- Login and you can see something like `Cart (0)` on the top.
+
+![Cart Badge](./guides/8-cart-badge.png)
+
+- Replace the content in `app/helpers/application_helper.rb` with
+
+```ruby
+def vietnamese_currency(price)
+  number_to_currency(price, unit: 'đ', seperator: ',', format: "%n %u")
+end
+```
+
+- Replace the content in `app/views/carts/show.html.erb` with
+
+```erb
+<h1 class="mt-3 mb-3">Shopping cart</h1>
+
+<% if current_cart.total_quantity == 0 %>
+  You have no items in the cart.
+<% else %>
+  <table class="table">
+    <thead>
+      <td></td>
+      <td>Product</td>
+      <td>Quantity</td>
+      <td>Sub-total</td>
+    </thead>
+    <% current_cart.cart_items.each do |cart_item| %>
+      <%= render 'cart_item', cart_item: cart_item %>
+    <% end %>
+    <tfoot>
+      <td colspan="3"><b>Total</b></td>
+      <td><%= vietnamese_currency(current_cart.total_price) %></td>
+    </tfoot>
+  </table>
+<% end %>
+```
+
+- Create a new file `app/views/carts/_cart_item.html.erb` with the content:
+
+```erb
+<tr>
+  <td class="align-middle"><img class="img-thumbnail admin-product-image" src="<%= cart_item.product.image %>"/></td>
+  <td class="align-middle">
+    <div>
+      <%= cart_item.product.brand %>
+    </div>
+    <div>
+      <%= link_to cart_item.product.name, product_path(cart_item.product)%>
+    </div>
+    <div>
+      <%= vietnamese_currency(cart_item.product.price) %>
+    </div>
+  </td>
+  <td class="align-middle">
+    <%= link_to "-", remove_item_carts_path(cart_item.product), method: :delete, class: 'btn btn-danger mr-3' %>
+    <%= cart_item.quantity %>
+    <%= link_to "+", add_item_carts_path(cart_item.product), method: :post, class: 'btn btn-success ml-3' %>
+  </td>
+  <td class="align-middle">
+    <%= vietnamese_currency(cart_item.sub_total_price) %>
+  </td>
+</tr>
+```
+
+- Click on the `Cart(0)`, we'll see an empty shopping cart. We'll continue to implement "Add to cart" buttons.
+
+![Cart Badge](./guides/8-cart-empty.png)
+
+- Open `app/controllers/carts_controller.rb`.
+
++ Add into the top of `CartsController`
+
+```ruby
+before_action :authenticate_user!
+before_action :set_product, only: [:add_item, :remove_item]
+```
+
++ Add these three methods into `CartsController`
+
+```erb
+def add_item
+  cart_item = current_cart.cart_items.find_or_create_by(
+    product_id: @product.id
+  )
+  cart_item.update(quantity: cart_item.quantity.to_i + 1)
+
+  redirect_to carts_path
+end
+
+def remove_item
+  cart_item = current_cart.cart_items.find_by(
+    product_id: @product.id
+  )
+  if cart_item.quantity.to_i > 1
+    cart_item.update(quantity: cart_item.quantity.to_i - 1)
+  else
+    cart_item.destroy
+  end
+
+  redirect_to carts_path
+end
+
+private
+
+def set_product
+  @product = Product.find(params[:product_id])
+end
+```
+
+- Add "Add to cart" button into desired location in `app/views/products/show.html.erb`:
+
+```erb
+<%= link_to "Add to cart", add_item_carts_path(@product), method: :post, class: 'btn btn-success mt-1' %>
+```
+
+- Do the same with `app/views/products/_product.html.erb`
+
+- That's it. You can now test the feature, by clicking "Add to cart", and then edit the quantity with `-` and `+` buttons in the shopping cart. Enjoy!
+
+![Cart Badge](./guides/8-cart-full.png)
