@@ -1,0 +1,21 @@
+<h1 class="mt-3 mb-3">Shopping cart</h1>
+
+<% if current_cart.total_quantity == 0 %>
+  You have no items in the cart.
+<% else %>
+  <table class="table">
+    <thead>
+      <td></td>
+      <td>Product</td>
+      <td>Quantity</td>
+      <td>Sub-total</td>
+    </thead>
+    <% current_cart.cart_items.each do |cart_item| %>
+      <%= render 'cart_item', cart_item: cart_item %>
+    <% end %>
+    <tfoot>
+      <td colspan="3"><b>Total</b></td>
+      <td><%= vietnamese_currency(current_cart.total_price) %></td>
+    </tfoot>
+  </table>
+<% end %>

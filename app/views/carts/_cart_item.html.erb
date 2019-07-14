@@ -1,0 +1,22 @@
+<tr>
+  <td class="align-middle"><img class="img-thumbnail admin-product-image" src="<%= cart_item.product.image %>"/></td>
+  <td class="align-middle">
+    <div>
+      <%= cart_item.product.brand %>
+    </div>
+    <div>
+      <%= link_to cart_item.product.name, product_path(cart_item.product)%>
+    </div>
+    <div>
+      <%= vietnamese_currency(cart_item.product.price) %>
+    </div>
+  </td>
+  <td class="align-middle">
+    <%= link_to "-", remove_item_carts_path(cart_item.product), method: :delete, class: 'btn btn-danger mr-3' %>
+    <%= cart_item.quantity %>
+    <%= link_to "+", add_item_carts_path(cart_item.product), method: :post, class: 'btn btn-success ml-3' %>
+  </td>
+  <td class="align-middle">
+    <%= vietnamese_currency(cart_item.sub_total_price) %>
+  </td>
+</tr>

@@ -20,6 +20,15 @@
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav ml-auto">
+          <% if current_cart %>
+            <li class="nav-item">
+              <div class="nav-link">
+                <%= link_to carts_path do %>
+                  Cart (<%= current_cart.total_quantity %>)
+                <% end %>
+              </div>
+            </li>
+          <% end %>
           <% if user_signed_in? %>
               <li class="nav-item">
                 <div class="nav-link">

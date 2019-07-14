@@ -11,4 +11,5 @@
 
   <h5 class="product-name"><a href="<%= product_path(product) %>"><%= product.name %></a></h5>
   <h5 class="product-price"><%= number_to_currency(product.price, unit: 'đ', seperator: ',', format: "%n %u") %></h5>
+  <%= link_to "Add to cart", add_item_carts_path(product), method: :post, class: 'btn btn-success mt-1' %>
 </div>
