@@ -15,7 +15,7 @@ services:
       - DATABASE_PWD=password
       - AWS_REGION=ap-southeast-2
     volumes:
-      - postgres:/app
+      - ./:/app
     ports:
       - "4000:80"
     depends_on:
@@ -30,7 +30,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=railsgirl_db
     volumes:
-      - ./tmp/db/data:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     ports:
       - "5432"
 volumes:
