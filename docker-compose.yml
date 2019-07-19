@@ -15,7 +15,7 @@ services:
       - DATABASE_PWD=password
       - AWS_REGION=ap-southeast-2
     volumes:
-      - ./:/app
+      - postgres:/app
     ports:
       - "4000:80"
     depends_on:
@@ -33,3 +33,5 @@ services:
       - /var/lib/postgresql/data
     ports:
       - "5432"
+volumes:
+  postgres:
