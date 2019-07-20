@@ -600,7 +600,7 @@ end
     </thead>
     <tbody>
       <% @products.each do |product| %>
-        <%= render 'product', product: product %>
+        <%= render 'product_row', product: product %>
       <% end %>
     </tbody>
   </table>
