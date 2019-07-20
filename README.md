@@ -678,12 +678,12 @@ end
     </div>
 
     <div class="form-group">
-      <label for="product_description">Name</label>
+      <label for="product_description">Description</label>
       <%= form.text_area(:description, class: 'form-control', rows: 7) %>
     </div>
 
     <div class="form-group">
-      <label for="product_price">Name</label>
+      <label for="product_price">Price</label>
       <%= form.number_field(:price, class: 'form-control') %>
     </div>
   </div>
