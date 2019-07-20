@@ -532,6 +532,7 @@ To deploy to the world, please follow the following step:
 - Run `heroku container:login`
 - Run `heroku container:push web --app <<APP NAME>>`
 - Run `heroku container:release web --app <<APP NAME>>`
+- To seed data on heroku, run `rake db:seed` same as above, but within heroku run command: `heroku run rake db:seed --app <<APP NAME>>`
 
 Click on "Open app", and enjoy
 
