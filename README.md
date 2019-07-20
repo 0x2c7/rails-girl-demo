@@ -510,6 +510,8 @@ product.update!(description: "- An immersive Cinematic Infinity Display, Pro-gra
 # 5. Deploy your application (Advanced)
 To deploy to the world, please follow the following step:
 
+- Install Heroku CLI at [https://devcenter.heroku.com/articles/heroku-cli](https://devcenter.heroku.com/articles/heroku-cli)
+
 - Register an account in Heroku
 
 ![Register account](guides/register-account.png)
