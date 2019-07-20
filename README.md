@@ -577,7 +577,7 @@ end
 
 ```erb
 <li class="nav-item">
-  <a class="nav-link" href="<%= root_path %>">Products</a>
+  <a class="nav-link" href="<%= admin_root_path %>">Admin</a>
 </li>
 ```
 
